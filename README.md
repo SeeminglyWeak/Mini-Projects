@@ -21,12 +21,11 @@ Terminal-based input/output
 # 💻 How to Run
 These projects are written in pure Java and run in the terminal.
 
-Steps:
-bash
-# Compile
+Steps: (bash)
+ Compile - 
 javac Main.java
 
-# Run
+ Run - 
 java Main
 Each project has its own folder with a Main.java file. Just compile and run from there.
 
