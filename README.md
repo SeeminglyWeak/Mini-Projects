@@ -2,21 +2,21 @@
 This repository contains two beginner-friendly Java projects that run entirely in the terminal. No GUI, no frameworks—just pure Java logic.
 
 # 🗂️ Projects Included
-Library Management System
+Library Management System : 
 
-Add, remove, and search books
+-Add, remove, and search books
 
-Track issued and returned books
+-Track issued and returned books
 
-Simple menu-driven interface
+-Simple menu-driven interface
 
-Inventory Management System
+Inventory Management System : 
 
-Add and update items
+-Add and update items
 
-Track stock levels
+-Track stock levels
 
-Terminal-based input/output
+-Terminal-based input/output
 
 # 💻 How to Run
 These projects are written in pure Java and run in the terminal.
