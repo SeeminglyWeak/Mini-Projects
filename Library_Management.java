@@ -25,7 +25,6 @@ class validNameException extends Exception{
 
 class check{
     
-    //static Scanner sc = new Scanner(System.in);
     static int int_check(Scanner sc) throws InputMismatchException{
 
         int ID = Integer.MIN_VALUE;
