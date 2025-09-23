@@ -11,11 +11,49 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.InputMismatchException;
+
+class NegativeNumException extends Exception{
+    NegativeNumException(String message){
+        super(message);
+    }
+}
+
+class Input_Check{
+
+    static int int_check(Scanner in,String question){
+        boolean flag;
+        int check = Integer.MIN_VALUE;
+        do{
+            try {
+                System.out.print(question);
+                check = in.nextInt();
+                if(check<0){
+                    throw new NegativeNumException("Enter an Integer greater than or equal to 0 for the given field!");
+                }
+                flag = false;
+            } catch (NegativeNumException e) {
+                in.nextLine();
+                System.out.println(e.getMessage());
+                flag = true;
+                System.out.print(question);
+            } catch (InputMismatchException e) {
+                in.nextLine();
+                System.out.println("Enter an Integer for the given field!");
+                flag = true;
+                System.out.print(question);
+            }
+        }while(flag);
+        return check;
+    }
+
+
+}
 
 class Common_Handle{
-    void listProducts(HashMap<String,Integer> ID, LinkedList<Integer> price, LinkedList<Integer> stock){
-        for(Map.Entry<String,Integer> v : ID.entrySet()){
-            System.out.println("Product Name-> " + v.getKey() + "Product Price->₹" + price.get(v.getValue()) + "Stock Available->" + stock.get(v.getValue()));
+    void listProducts(HashMap<String,Integer> products, LinkedList<Integer> price, LinkedList<Integer> stock){
+        for(Map.Entry<String,Integer> v : products.entrySet()){
+            System.out.println("Product Name-> " + v.getKey() + " | Product Price-> " + price.get(v.getValue()) + " | Stock Available->" + stock.get(v.getValue()));
         }
     }
 }
@@ -26,10 +64,12 @@ class Customer_Handle{
 
 class Manager_Handle{
     private static int ADMIN_PASSWORD = 669;
+    String question;
 
     static Boolean login(Scanner in){
         System.out.println("Enter Password : ");
         int access = in.nextInt();
+        in.nextLine();
         if(access==ADMIN_PASSWORD){
             return true;
         }else{
@@ -40,14 +80,11 @@ class Manager_Handle{
     void addingProducts(HashMap<String,Integer> ID,LinkedList<Integer> price,LinkedList<Integer> stock, Scanner in){
         System.out.print("Enter the product name : ");
         String prodName = in.nextLine();
-        System.out.print("What should be the prduct ID : ");
-        int ID_ = in.nextInt();
-        ID.put(prodName, ID_);
-        System.out.print("What is the price : ");
-        int amount = in.nextInt();
+        int idx = Input_Check.int_check(in, "What will be the index of the product : ");
+        ID.put(prodName, idx);
+        int amount = Input_Check.int_check(in, "What will be the price of the Product : ");
         price.add(amount);
-        System.out.print("What is the stock : ");
-        int quantity= in.nextInt();
+        int quantity= Input_Check.int_check(in, "What is the stock of the Product : ");
         stock.add(quantity);
     }
 
@@ -67,6 +104,30 @@ class Manager_Handle{
         System.out.print("What is the updated price : ");
         int updated_price = in.nextInt();
         price.add(idx, updated_price);
+    }
+
+    void removeProduct(Scanner in ,HashMap<String,Integer> products ,LinkedList<Integer> price ,LinkedList<Integer> stock){
+        System.out.println("Which product you want to remove?");
+        String removeProduct = in.nextLine();
+        if(products.containsKey(removeProduct)){
+            int remove_idx = products.get(removeProduct);
+            price.remove(remove_idx);
+            stock.remove(remove_idx);
+            products.remove(removeProduct, remove_idx);
+            while(products.containsValue(remove_idx+1)){
+                String toUpdate_Key = null;
+                int to_update = remove_idx + 1;
+                for(Map.Entry<String,Integer> v : products.entrySet()){
+                    if(v.getValue().equals(to_update)){
+                        toUpdate_Key = v.getKey();
+                    }
+                }
+                products.replace(toUpdate_Key, remove_idx);
+                remove_idx++;
+            }
+        }else{
+            System.out.println("There is no such product in the stock.");
+        }
     }
 }
 
@@ -111,6 +172,7 @@ public class Inventory_Management {
             case "Manager":
             case "manager":
                 Manager_Handle obj_1 = new Manager_Handle();
+                Common_Handle obj_2 = new Common_Handle();
                 
                 if(Manager_Handle.login(in)){
                 System.out.println("Access Granted!");
@@ -119,7 +181,7 @@ public class Inventory_Management {
                 break;
                 }
 
-                System.out.println("What would you like to do?\n1.Add Products\n2.Alter Stocks\n3.Alter Price");
+                System.out.println("What would you like to do?\n1.Add Products\n2.Alter Stocks\n3.Alter Price\n4.Remove Product\n5.List Products");
                 String action = in.nextLine();
                 switch (action) {
                     case "1":
@@ -134,7 +196,13 @@ public class Inventory_Management {
                     case "Alter Price":
                         obj_1.changePrice(products, price, in);
                         break;
-                
+                    case "4":
+                    case "Remove Product":
+                        obj_1.removeProduct(in, products, price, stock);
+                        break;
+                    case "5":
+                    case "List Products":
+                        obj_2.listProducts(products, price, stock);
                     default:
                         System.out.println("Enter a valid command!!");
                         break;
