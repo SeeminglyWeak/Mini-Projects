@@ -71,7 +71,7 @@ class Common_Handle{
                 return false;
             }else{
                 System.out.println("Enter a valid Command!");
-                exit = false;
+                exit = true;
             }
         }while(exit);
         return true;
@@ -105,7 +105,7 @@ class Customer_Handle{
             }
         }else{
             System.out.println("No such product present!!");
-        }
+        } 
     }
 
     void removeCart(Scanner in, HashMap<String,Integer> cart){
@@ -132,10 +132,26 @@ class Customer_Handle{
         return "The total bill would be " + totalBill;
     }
 
+    String checkOut(HashMap<String,Integer> products, HashMap<String,Integer> cart, LinkedList<Integer> stock, LinkedList<String> history){
+        String temp = "";
+        for(Map.Entry<String,Integer> v : cart.entrySet()){
+            for(Map.Entry<String,Integer> e : products.entrySet()){
+                if(e.getKey().equals(v.getKey())){
+                    int idx = e.getValue();
+                    temp = temp + e.getKey() + "->" + v.getValue() + " | ";
+                    stock.set(idx, stock.get(idx)-v.getValue());
+                }
+            }
+        }
+        int remove = temp.lastIndexOf("|") - 1;
+        temp = temp.substring(0, remove);
+        history.add(temp);
+        return "Thank you for shopping with us, Visit again!!";
+    }
 }
 
 class Manager_Handle{
-    private static int ADMIN_PASSWORD = 669;
+    private static final int ADMIN_PASSWORD = 669;
     String question;
 
     static Boolean login(Scanner in){
@@ -229,6 +245,7 @@ public class Inventory_Management {
         LinkedList <Integer> price = new LinkedList<>(); //Storing Product Quantity
         HashMap <String,Integer> cart = new HashMap<>(); //Product Name and Stock bought by customer
         ArrayList <String> feedbacks = new ArrayList<>(); //Feedback by customer if not bought anything
+        LinkedList <String> history = new LinkedList<>(); //For saving sales history
 
         boolean proceed;
 
@@ -295,8 +312,10 @@ public class Inventory_Management {
                             System.out.println("Enter a valid Command!!");
                             break;
                     }
-                    if(cart.isEmpty()){
-                        System.out.println("Why did you not purchase anything, please leave a feedback.");
+                }while(!Common_Handle.useAgain(in, "Do you want to checkout?\n1.Yes\n2.No"));
+
+                if(cart.isEmpty()){
+                        System.out.println("Please leave a feedback.");
                         int idx = 0;
                         while(idx!=feedbacks.size()){
                             idx++;
@@ -306,9 +325,10 @@ public class Inventory_Management {
                         feedbacks.add(idx, feedback);
                     }else{
                         System.out.println(obj_3.showBill(products, cart, price));
-                        //Payment then leave
+                        //Payment 
+                        System.out.println(obj_3.checkOut(products, cart, stock, history));
+                        cart.clear();
                     }
-                }while(Common_Handle.useAgain(in, "Do you want to use the Customer Handle again?\n1.Yes\n2.No"));
 
                 break;
 
@@ -323,7 +343,7 @@ public class Inventory_Management {
                 break;
                 }
                 do{
-                    System.out.println("What would you like to do?\n1.Add Products\n2.Alter Stocks\n3.Alter Price\n4.Remove Product\n5.List Products");
+                    System.out.println("What would you like to do?\n1.Add Products\n2.Alter Stocks\n3.Alter Price\n4.Remove Product\n5.List Products\n6.Feedbacks\n7.Sales History");
                     String action = in.nextLine();
                     switch (action) {
                         case "1":
@@ -351,6 +371,13 @@ public class Inventory_Management {
                             for(int i = 0; i < feedbacks.size(); i++){
                                 System.out.println("Customer " + (i+1) + " : " + feedbacks.get(i));
                             }
+                            break;
+                        case "7":
+                        case "Sales History":
+                            for(int i = 0; i < history.size(); i++){
+                                System.out.println("Customer " + (i+1) + " : " + history.get(i));
+                            }
+                            break;
                         default:
                             System.out.println("Enter a valid command!!");
                             break;
