@@ -197,7 +197,7 @@ class Manager_Handle{
         int idx = products.get(product);
         System.out.print("What is the updated stock : ");
         int updated_stock = in.nextInt();
-        stock.add(idx, updated_stock);
+        stock.set(idx, updated_stock);
     }
 
     void changePrice(HashMap<String,Integer> products, LinkedList<Integer> price, Scanner in){
@@ -206,7 +206,7 @@ class Manager_Handle{
         int idx = products.get(product);
         System.out.print("What is the updated price : ");
         int updated_price = in.nextInt();
-        price.add(idx, updated_price);
+        price.set(idx, updated_price);
     }
 
     void removeProduct(Scanner in ,HashMap<String,Integer> products ,LinkedList<Integer> price ,LinkedList<Integer> stock){
@@ -248,6 +248,7 @@ public class Inventory_Management {
         LinkedList <String> history = new LinkedList<>(); //For saving sales history
 
         boolean proceed;
+        int feedbackIdx = 0;
 
         Common_Handle obj_2 = new Common_Handle();
 
@@ -316,13 +317,10 @@ public class Inventory_Management {
 
                 if(cart.isEmpty()){
                         System.out.println("Please leave a feedback.");
-                        int idx = 0;
-                        while(idx!=feedbacks.size()){
-                            idx++;
-                        }
                         String feedback = in.nextLine();
                         feedback.trim();
-                        feedbacks.add(idx, feedback);
+                        feedbacks.add(feedbackIdx, feedback);
+                        feedbackIdx++;
                     }else{
                         System.out.println(obj_3.showBill(products, cart, price));
                         //Payment 
